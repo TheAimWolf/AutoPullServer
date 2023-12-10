@@ -6,7 +6,7 @@ const axios = require('axios');
 const serverPath = process.env.PATH_TO_SERVER;
 const port = process.env.PORT || 3000;
 const webPath = process.env.WEB_PATH || 'webhook';
-const discordWebook = process.env.DISCORD_WEBHOOK;
+const discordWebook = process.env.DC_WEBHOOK;
 
 function pullServer() {
     exec(`cd ${serverPath} && git pull`, (error, stdout, stderr) => {
@@ -46,7 +46,7 @@ function sendDiscordLog(pMessage) {
             console.log('Discord Webhook send: ', response.data);
         })
         .catch(error => {
-            console.error('Error while sending embeed: ', error);
+            console.error('Error while sending embeded: ', error);
         });
 }
 
