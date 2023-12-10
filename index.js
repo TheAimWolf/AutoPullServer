@@ -2,9 +2,11 @@ const express = require('express');
 const exec = require('child_process').exec;
 const app = express();
 require('dotenv').config();
+const axios = require('axios');
 const serverPath = process.env.PATH_TO_SERVER;
 const port = process.env.PORT || 3000;
 const webPath = process.env.WEB_PATH || 'webhook';
+const discordWebook = process.env.DISCORD_WEBHOOK;
 
 function pullServer() {
     exec(`cd ${serverPath} && git pull`, (error, stdout, stderr) => {
@@ -14,7 +16,38 @@ function pullServer() {
             return;
         }
         console.log(`stdout: ${stdout}`);
+        sendDiscordLog(stdout)
     });
+}
+
+function sendDiscordLog(pMessage) {
+    const embed = {
+        title: "GitHub Update",
+        description: `Neuer Push auf GitHub: ${pMessage}`,
+        color: 3447003,
+        timestamp: new Date(),
+        footer: {
+            text: "GitHub Integration by AimWolf"
+        },
+        author: {
+            name: "GitHub",
+            url: "https://github.com",
+            icon_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+        },
+    };
+
+    const message = {
+        content: "Update on GitHub Repository",
+        embeds: [embed]
+    };
+
+    axios.post(discordWebook, message)
+        .then(response => {
+            console.log('Discord Webhook send: ', response.data);
+        })
+        .catch(error => {
+            console.error('Error while sending embeed: ', error);
+        });
 }
 
 app.post(`/${webPath}`, (req, res) => {
