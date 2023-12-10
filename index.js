@@ -3,6 +3,8 @@ const exec = require('child_process').exec;
 const app = express();
 require('dotenv').config();
 const serverPath = process.env.PATH_TO_SERVER;
+const port = process.env.PORT || 3000;
+const webPath = process.env.WEB_PATH || 'webhook';
 
 function pullServer() {
     exec(`cd ${serverPath} && git pull`, (error, stdout, stderr) => {
@@ -15,12 +17,12 @@ function pullServer() {
     });
 }
 
-app.post('/webhook', (req, res) => {
+app.post(`/${webPath}`, (req, res) => {
     pullServer();
     res.status(200).send('Updated');
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
     console.log('Testing path');
     pullServer();
     console.log('Server listening on port 3000');
